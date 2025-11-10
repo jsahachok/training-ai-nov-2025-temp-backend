@@ -12,9 +12,9 @@ const (
 	ErrCodeValidation     = "VALIDATION_ERROR"
 
 	// User specific error codes
-	ErrCodeUserNotFound        = "USER_NOT_FOUND"
-	ErrCodeUserEmailExists     = "USER_EMAIL_EXISTS"
-	ErrCodeUserInvalidData     = "USER_INVALID_DATA"
+	ErrCodeUserNotFound    = "USER_NOT_FOUND"
+	ErrCodeUserEmailExists = "USER_EMAIL_EXISTS"
+	ErrCodeUserInvalidData = "USER_INVALID_DATA"
 
 	// Transfer specific error codes
 	ErrCodeTransferNotFound       = "TRANSFER_NOT_FOUND"
@@ -40,7 +40,7 @@ const (
 
 // Default pagination values
 const (
-	DefaultLimit    = 10
-	MaxLimit        = 100
-	DefaultOffset   = 0
+	DefaultLimit  = 10
+	MaxLimit      = 100
+	DefaultOffset = 0
 )

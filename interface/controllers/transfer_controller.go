@@ -26,7 +26,7 @@ func NewTransferController(transferUseCase *usecases.TransferUseCase) *TransferC
 // TransferPoints handles POST /users/{id}/transfer
 func (ctrl *TransferController) TransferPoints(c *fiber.Ctx) error {
 	fromUserIDParam := c.Params("id")
-	
+
 	fromUserID, err := strconv.ParseUint(fromUserIDParam, 10, 32)
 	if err != nil {
 		return utils.BadRequestResponse(c, "Invalid user ID format")
@@ -75,7 +75,7 @@ func (ctrl *TransferController) TransferPoints(c *fiber.Ctx) error {
 // GetTransferHistory handles GET /users/{id}/transfer
 func (ctrl *TransferController) GetTransferHistory(c *fiber.Ctx) error {
 	userIDParam := c.Params("id")
-	
+
 	userID, err := strconv.ParseUint(userIDParam, 10, 32)
 	if err != nil {
 		return utils.BadRequestResponse(c, "Invalid user ID format")
@@ -115,7 +115,7 @@ func (ctrl *TransferController) GetTransferHistory(c *fiber.Ctx) error {
 // GetTransferByID handles GET /transfer/{id}
 func (ctrl *TransferController) GetTransferByID(c *fiber.Ctx) error {
 	transferIDParam := c.Params("id")
-	
+
 	transferID, err := strconv.ParseUint(transferIDParam, 10, 32)
 	if err != nil {
 		return utils.BadRequestResponse(c, "Invalid transfer ID format")

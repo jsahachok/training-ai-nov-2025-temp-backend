@@ -42,7 +42,7 @@ func main() {
 	})
 
 	// Add middleware
-	app.Use(recover.New()) // Recover from panics
+	app.Use(recover.New())   // Recover from panics
 	app.Use(requestid.New()) // Add request ID
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${status} - ${method} ${path} - ${latency}\n",

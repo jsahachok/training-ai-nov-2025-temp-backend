@@ -36,7 +36,7 @@ func (ctrl *UserController) GetAllUsers(c *fiber.Ctx) error {
 // GetUserByID handles GET /users/:id
 func (ctrl *UserController) GetUserByID(c *fiber.Ctx) error {
 	idParam := c.Params("id")
-	
+
 	id, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		return utils.BadRequestResponse(c, "Invalid user ID format")
@@ -79,7 +79,7 @@ func (ctrl *UserController) CreateUser(c *fiber.Ctx) error {
 // UpdateUser handles PUT /users/:id
 func (ctrl *UserController) UpdateUser(c *fiber.Ctx) error {
 	idParam := c.Params("id")
-	
+
 	id, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		return utils.BadRequestResponse(c, "Invalid user ID format")
@@ -115,7 +115,7 @@ func (ctrl *UserController) UpdateUser(c *fiber.Ctx) error {
 // DeleteUser handles DELETE /users/:id
 func (ctrl *UserController) DeleteUser(c *fiber.Ctx) error {
 	idParam := c.Params("id")
-	
+
 	id, err := strconv.ParseUint(idParam, 10, 32)
 	if err != nil {
 		return utils.BadRequestResponse(c, "Invalid user ID format")
