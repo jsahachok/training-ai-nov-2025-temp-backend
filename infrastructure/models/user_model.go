@@ -19,6 +19,7 @@ type UserModel struct {
 	Country     string `gorm:"not null"`
 	PostalCode  string `gorm:"not null"`
 	Avatar      string `gorm:"default:''"`
+	Points      int    `gorm:"default:0;not null"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
@@ -46,6 +47,7 @@ func (u *UserModel) ToEntity() *entities.User {
 		Country:     u.Country,
 		PostalCode:  u.PostalCode,
 		Avatar:      u.Avatar,
+		Points:      u.Points,
 		CreatedAt:   u.CreatedAt,
 		UpdatedAt:   u.UpdatedAt,
 		DeletedAt:   deletedAt,
@@ -65,6 +67,7 @@ func FromEntity(user *entities.User) *UserModel {
 		Country:     user.Country,
 		PostalCode:  user.PostalCode,
 		Avatar:      user.Avatar,
+		Points:      user.Points,
 		CreatedAt:   user.CreatedAt,
 		UpdatedAt:   user.UpdatedAt,
 	}

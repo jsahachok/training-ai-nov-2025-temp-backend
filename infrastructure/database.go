@@ -19,7 +19,7 @@ func NewDatabase() *Database {
 	}
 
 	// Auto migrate the schema
-	err = db.AutoMigrate(&infrastructureModels.UserModel{})
+	err = db.AutoMigrate(&infrastructureModels.UserModel{}, &infrastructureModels.TransferModel{})
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}

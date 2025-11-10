@@ -14,6 +14,7 @@ type User struct {
 	Country     string     `json:"country"`
 	PostalCode  string     `json:"postalCode"`
 	Avatar      string     `json:"avatar"`
+	Points      int        `json:"points"`
 	CreatedAt   time.Time  `json:"createdAt"`
 	UpdatedAt   time.Time  `json:"updatedAt"`
 	DeletedAt   *time.Time `json:"deletedAt,omitempty"`

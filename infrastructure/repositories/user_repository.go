@@ -102,3 +102,35 @@ func (r *userRepository) GetByEmail(email string) (*entities.User, error) {
 
 	return userModel.ToEntity(), nil
 }
+
+func (r *userRepository) UpdatePoints(userID uint, points int) error {
+	result := r.db.Model(&infrastructureModels.UserModel{}).
+		Where("id = ?", userID).
+		Update("points", points)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("user not found")
+	}
+
+	return nil
+}
+
+func (r *userRepository) UpdatePointsWithTransaction(tx interface{}, userID uint, points int) error {
+	result := tx.(*gorm.DB).Model(&infrastructureModels.UserModel{}).
+		Where("id = ?", userID).
+		Update("points", points)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("user not found")
+	}
+
+	return nil
+}

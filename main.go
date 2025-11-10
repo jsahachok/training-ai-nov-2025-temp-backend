@@ -16,14 +16,17 @@ func main() {
 	// Initialize database
 	database := infrastructure.NewDatabase()
 
-	// Initialize repository
+	// Initialize repositories
 	userRepo := infrastructureRepo.NewUserRepository(database.GetDB())
+	transferRepo := infrastructureRepo.NewTransferRepository(database.GetDB())
 
-	// Initialize use case
+	// Initialize use cases
 	userUseCase := usecases.NewUserUseCase(userRepo)
+	transferUseCase := usecases.NewTransferUseCase(transferRepo, userRepo)
 
-	// Initialize controller
+	// Initialize controllers
 	userController := controllers.NewUserController(userUseCase)
+	transferController := controllers.NewTransferController(transferUseCase)
 
 	// Create new Fiber instance
 	app := fiber.New()
@@ -53,6 +56,11 @@ func main() {
 	app.Post("/users", userController.CreateUser)
 	app.Put("/users/:id", userController.UpdateUser)
 	app.Delete("/users/:id", userController.DeleteUser)
+
+	// Transfer routes
+	app.Post("/users/:id/transfer", transferController.TransferPoints)
+	app.Get("/users/:id/transfer", transferController.GetTransferHistory)
+	app.Get("/transfer/:id", transferController.GetTransferByID)
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
