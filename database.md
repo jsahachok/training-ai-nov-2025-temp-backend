@@ -9,17 +9,17 @@ This document describes the database schema for the Workshop4 Backend API, which
 erDiagram
     USERS {
         uint id PK "Primary Key, Auto Increment"
-        varchar(100) first_name "User's first name"
-        varchar(100) last_name "User's last name"
-        varchar(255) email UK "Unique email address"
-        varchar(20) phone "Phone number"
+        varchar first_name "User's first name"
+        varchar last_name "User's last name"
+        varchar email UK "Unique email address"
+        varchar phone "Phone number"
         date date_of_birth "Date of birth"
         text address "Full address"
-        varchar(100) city "City name"
-        varchar(100) country "Country name"
-        varchar(20) postal_code "Postal/ZIP code"
-        varchar(500) avatar "Avatar image URL"
-        decimal(10,2) points "User points balance"
+        varchar city "City name"
+        varchar country "Country name"
+        varchar postal_code "Postal/ZIP code"
+        varchar avatar "Avatar image URL"
+        decimal points "User points balance"
         timestamp created_at "Record creation time"
         timestamp updated_at "Last update time"
         timestamp deleted_at "Soft delete timestamp"
@@ -29,9 +29,9 @@ erDiagram
         uint id PK "Primary Key, Auto Increment"
         uint from_user_id FK "Source user ID"
         uint to_user_id FK "Destination user ID"
-        decimal(10,2) amount "Transfer amount"
-        varchar(255) description "Transfer description"
-        varchar(50) status "Transfer status"
+        decimal amount "Transfer amount"
+        varchar description "Transfer description"
+        varchar status "Transfer status"
         timestamp transferred_at "Transfer execution time"
         timestamp created_at "Record creation time"
         timestamp updated_at "Last update time"
@@ -96,6 +96,57 @@ The `transfers` table records all point transfer transactions between users.
 - `from_user_id` REFERENCES `users(id)` ON UPDATE CASCADE ON DELETE RESTRICT
 - `to_user_id` REFERENCES `users(id)` ON UPDATE CASCADE ON DELETE RESTRICT
 
+## SQL Schema
+
+### Create Users Table
+```sql
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(20) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    address TEXT NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    avatar VARCHAR(500) DEFAULT '',
+    points DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_deleted_at ON users(deleted_at);
+```
+
+### Create Transfers Table
+```sql
+CREATE TABLE transfers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_user_id INTEGER NOT NULL,
+    to_user_id INTEGER NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    description VARCHAR(255) DEFAULT '',
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    transferred_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    
+    FOREIGN KEY (from_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (to_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- Indexes
+CREATE INDEX idx_transfers_from_user_id ON transfers(from_user_id);
+CREATE INDEX idx_transfers_to_user_id ON transfers(to_user_id);
+CREATE INDEX idx_transfers_deleted_at ON transfers(deleted_at);
+```
+
 ## Business Rules
 
 ### Transfer Rules
@@ -136,3 +187,50 @@ Initial migration creates:
 - Indexes on foreign keys (`from_user_id`, `to_user_id`) for fast transfer lookups
 - Unique index on email for fast user authentication
 - Soft delete indexes for efficient filtering of active records
+
+## Example Queries
+
+### Get User with Points Balance
+```sql
+SELECT id, first_name, last_name, email, points 
+FROM users 
+WHERE deleted_at IS NULL 
+AND id = ?;
+```
+
+### Get Transfer History for User
+```sql
+SELECT t.*, 
+       u1.first_name as sender_first_name, 
+       u1.last_name as sender_last_name,
+       u2.first_name as receiver_first_name, 
+       u2.last_name as receiver_last_name
+FROM transfers t
+JOIN users u1 ON t.from_user_id = u1.id
+JOIN users u2 ON t.to_user_id = u2.id
+WHERE (t.from_user_id = ? OR t.to_user_id = ?)
+AND t.deleted_at IS NULL
+ORDER BY t.transferred_at DESC
+LIMIT ? OFFSET ?;
+```
+
+### Update User Points (Transaction)
+```sql
+BEGIN TRANSACTION;
+
+-- Deduct points from sender
+UPDATE users 
+SET points = points - ?, updated_at = CURRENT_TIMESTAMP 
+WHERE id = ? AND points >= ?;
+
+-- Add points to receiver
+UPDATE users 
+SET points = points + ?, updated_at = CURRENT_TIMESTAMP 
+WHERE id = ?;
+
+-- Create transfer record
+INSERT INTO transfers (from_user_id, to_user_id, amount, description, status, transferred_at)
+VALUES (?, ?, ?, ?, 'completed', CURRENT_TIMESTAMP);
+
+COMMIT;
+```
