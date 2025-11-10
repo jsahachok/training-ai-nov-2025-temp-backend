@@ -3,15 +3,15 @@ package entities
 import "time"
 
 type Transfer struct {
-	ID            uint      `json:"id"`
-	FromUserID    uint      `json:"fromUserId"`
-	ToUserID      uint      `json:"toUserId"`
-	Amount        float64   `json:"amount"`
-	Description   string    `json:"description,omitempty"`
-	Status        string    `json:"status"` // pending, completed, failed
-	TransferredAt time.Time `json:"transferredAt"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            uint       `json:"id"`
+	FromUserID    uint       `json:"fromUserId"`
+	ToUserID      uint       `json:"toUserId"`
+	Amount        float64    `json:"amount"`
+	Description   string     `json:"description,omitempty"`
+	Status        string     `json:"status"` // pending, completed, failed
+	TransferredAt time.Time  `json:"transferredAt"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
 	DeletedAt     *time.Time `json:"deletedAt,omitempty"`
 }
 

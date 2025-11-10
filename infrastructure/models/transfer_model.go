@@ -8,17 +8,17 @@ import (
 )
 
 type TransferModel struct {
-	ID            uint      `gorm:"primaryKey;autoIncrement"`
-	FromUserID    uint      `gorm:"column:from_user_id;not null;index"`
-	ToUserID      uint      `gorm:"column:to_user_id;not null;index"`
-	Amount        float64   `gorm:"column:amount;not null;type:decimal(10,2)"`
-	Description   string    `gorm:"column:description;type:varchar(255);default:''"`
-	Status        string    `gorm:"column:status;type:varchar(50);not null;default:'pending'"`
-	TransferredAt time.Time `gorm:"column:transferred_at;not null"`
-	CreatedAt     time.Time `gorm:"column:created_at;not null"`
-	UpdatedAt     time.Time `gorm:"column:updated_at;not null"`
+	ID            uint           `gorm:"primaryKey;autoIncrement"`
+	FromUserID    uint           `gorm:"column:from_user_id;not null;index"`
+	ToUserID      uint           `gorm:"column:to_user_id;not null;index"`
+	Amount        float64        `gorm:"column:amount;not null;type:decimal(10,2)"`
+	Description   string         `gorm:"column:description;type:varchar(255);default:''"`
+	Status        string         `gorm:"column:status;type:varchar(50);not null;default:'pending'"`
+	TransferredAt time.Time      `gorm:"column:transferred_at;not null"`
+	CreatedAt     time.Time      `gorm:"column:created_at;not null"`
+	UpdatedAt     time.Time      `gorm:"column:updated_at;not null"`
 	DeletedAt     gorm.DeletedAt `gorm:"column:deleted_at;index"`
-	
+
 	// Foreign key relationships
 	FromUser UserModel `gorm:"foreignKey:FromUserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 	ToUser   UserModel `gorm:"foreignKey:ToUserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
