@@ -103,7 +103,7 @@ func (r *userRepository) GetByEmail(email string) (*entities.User, error) {
 	return userModel.ToEntity(), nil
 }
 
-func (r *userRepository) UpdatePoints(userID uint, points int) error {
+func (r *userRepository) UpdatePoints(userID uint, points float64) error {
 	result := r.db.Model(&infrastructureModels.UserModel{}).
 		Where("id = ?", userID).
 		Update("points", points)
@@ -119,7 +119,7 @@ func (r *userRepository) UpdatePoints(userID uint, points int) error {
 	return nil
 }
 
-func (r *userRepository) UpdatePointsWithTransaction(tx interface{}, userID uint, points int) error {
+func (r *userRepository) UpdatePointsWithTransaction(tx interface{}, userID uint, points float64) error {
 	result := tx.(*gorm.DB).Model(&infrastructureModels.UserModel{}).
 		Where("id = ?", userID).
 		Update("points", points)

@@ -62,13 +62,14 @@ func (ctrl *TransferController) TransferPoints(c *fiber.Ctx) error {
 		"success": true,
 		"message": "Transfer completed successfully",
 		"data": entities.TransferResponse{
-			ID:          transfer.ID,
-			FromUserID:  transfer.FromUserID,
-			ToUserID:    transfer.ToUserID,
-			Points:      transfer.Points,
-			Description: transfer.Description,
-			Status:      transfer.Status,
-			CreatedAt:   transfer.CreatedAt,
+			ID:            transfer.ID,
+			FromUserID:    transfer.FromUserID,
+			ToUserID:      transfer.ToUserID,
+			Amount:        transfer.Amount,
+			Description:   transfer.Description,
+			Status:        transfer.Status,
+			TransferredAt: transfer.TransferredAt,
+			CreatedAt:     transfer.CreatedAt,
 		},
 	})
 }
@@ -142,13 +143,14 @@ func (ctrl *TransferController) GetTransferByID(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data": entities.TransferResponse{
-			ID:          transfer.ID,
-			FromUserID:  transfer.FromUserID,
-			ToUserID:    transfer.ToUserID,
-			Points:      transfer.Points,
-			Description: transfer.Description,
-			Status:      transfer.Status,
-			CreatedAt:   transfer.CreatedAt,
+			ID:            transfer.ID,
+			FromUserID:    transfer.FromUserID,
+			ToUserID:      transfer.ToUserID,
+			Amount:        transfer.Amount,
+			Description:   transfer.Description,
+			Status:        transfer.Status,
+			TransferredAt: transfer.TransferredAt,
+			CreatedAt:     transfer.CreatedAt,
 		},
 	})
 }

@@ -8,15 +8,20 @@ import (
 )
 
 type TransferModel struct {
-	ID          uint   `gorm:"primaryKey"`
-	FromUserID  uint   `gorm:"not null"`
-	ToUserID    uint   `gorm:"not null"`
-	Points      int    `gorm:"not null"`
-	Description string `gorm:"default:''"`
-	Status      string `gorm:"not null;default:'pending'"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	ID            uint      `gorm:"primaryKey;autoIncrement"`
+	FromUserID    uint      `gorm:"column:from_user_id;not null;index"`
+	ToUserID      uint      `gorm:"column:to_user_id;not null;index"`
+	Amount        float64   `gorm:"column:amount;not null;type:decimal(10,2)"`
+	Description   string    `gorm:"column:description;type:varchar(255);default:''"`
+	Status        string    `gorm:"column:status;type:varchar(50);not null;default:'pending'"`
+	TransferredAt time.Time `gorm:"column:transferred_at;not null"`
+	CreatedAt     time.Time `gorm:"column:created_at;not null"`
+	UpdatedAt     time.Time `gorm:"column:updated_at;not null"`
+	DeletedAt     gorm.DeletedAt `gorm:"column:deleted_at;index"`
+	
+	// Foreign key relationships
+	FromUser UserModel `gorm:"foreignKey:FromUserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	ToUser   UserModel `gorm:"foreignKey:ToUserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 }
 
 func (TransferModel) TableName() string {
@@ -30,28 +35,30 @@ func (t *TransferModel) ToEntity() *entities.Transfer {
 	}
 
 	return &entities.Transfer{
-		ID:          t.ID,
-		FromUserID:  t.FromUserID,
-		ToUserID:    t.ToUserID,
-		Points:      t.Points,
-		Description: t.Description,
-		Status:      t.Status,
-		CreatedAt:   t.CreatedAt,
-		UpdatedAt:   t.UpdatedAt,
-		DeletedAt:   deletedAt,
+		ID:            t.ID,
+		FromUserID:    t.FromUserID,
+		ToUserID:      t.ToUserID,
+		Amount:        t.Amount,
+		Description:   t.Description,
+		Status:        t.Status,
+		TransferredAt: t.TransferredAt,
+		CreatedAt:     t.CreatedAt,
+		UpdatedAt:     t.UpdatedAt,
+		DeletedAt:     deletedAt,
 	}
 }
 
 func FromTransferEntity(transfer *entities.Transfer) *TransferModel {
 	model := &TransferModel{
-		ID:          transfer.ID,
-		FromUserID:  transfer.FromUserID,
-		ToUserID:    transfer.ToUserID,
-		Points:      transfer.Points,
-		Description: transfer.Description,
-		Status:      transfer.Status,
-		CreatedAt:   transfer.CreatedAt,
-		UpdatedAt:   transfer.UpdatedAt,
+		ID:            transfer.ID,
+		FromUserID:    transfer.FromUserID,
+		ToUserID:      transfer.ToUserID,
+		Amount:        transfer.Amount,
+		Description:   transfer.Description,
+		Status:        transfer.Status,
+		TransferredAt: transfer.TransferredAt,
+		CreatedAt:     transfer.CreatedAt,
+		UpdatedAt:     transfer.UpdatedAt,
 	}
 
 	if transfer.DeletedAt != nil {

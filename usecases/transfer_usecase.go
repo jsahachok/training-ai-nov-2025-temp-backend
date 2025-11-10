@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"time"
 	"workshop4-backend/domain/entities"
 	"workshop4-backend/domain/repositories"
 )
@@ -34,7 +35,7 @@ func (uc *TransferUseCase) TransferPoints(fromUserID uint, req *entities.Transfe
 		return nil, errors.New("from user not found")
 	}
 
-	if fromUser.Points < req.Points {
+	if fromUser.Points < req.Amount {
 		return nil, errors.New("insufficient points")
 	}
 
@@ -47,13 +48,15 @@ func (uc *TransferUseCase) TransferPoints(fromUserID uint, req *entities.Transfe
 	// Begin transaction
 	tx := uc.transferRepo.BeginTransaction()
 
-	// Create transfer record
+	// Create transfer record with current timestamp
+	now := time.Now()
 	transfer := &entities.Transfer{
-		FromUserID:  fromUserID,
-		ToUserID:    req.ToUserID,
-		Points:      req.Points,
-		Description: req.Description,
-		Status:      "completed",
+		FromUserID:    fromUserID,
+		ToUserID:      req.ToUserID,
+		Amount:        req.Amount,
+		Description:   req.Description,
+		Status:        "completed",
+		TransferredAt: now,
 	}
 
 	err = uc.transferRepo.CreateWithTransaction(tx, transfer)
@@ -63,14 +66,14 @@ func (uc *TransferUseCase) TransferPoints(fromUserID uint, req *entities.Transfe
 	}
 
 	// Update from user points (deduct)
-	err = uc.userRepo.UpdatePointsWithTransaction(tx, fromUserID, fromUser.Points-req.Points)
+	err = uc.userRepo.UpdatePointsWithTransaction(tx, fromUserID, fromUser.Points-req.Amount)
 	if err != nil {
 		uc.transferRepo.RollbackTransaction(tx)
 		return nil, errors.New("failed to deduct points from sender")
 	}
 
 	// Update to user points (add)
-	err = uc.userRepo.UpdatePointsWithTransaction(tx, req.ToUserID, toUser.Points+req.Points)
+	err = uc.userRepo.UpdatePointsWithTransaction(tx, req.ToUserID, toUser.Points+req.Amount)
 	if err != nil {
 		uc.transferRepo.RollbackTransaction(tx)
 		return nil, errors.New("failed to add points to receiver")
@@ -106,13 +109,14 @@ func (uc *TransferUseCase) GetTransferHistory(userID uint, limit, offset int) (*
 	transferResponses := make([]entities.TransferResponse, len(transfers))
 	for i, transfer := range transfers {
 		transferResponses[i] = entities.TransferResponse{
-			ID:          transfer.ID,
-			FromUserID:  transfer.FromUserID,
-			ToUserID:    transfer.ToUserID,
-			Points:      transfer.Points,
-			Description: transfer.Description,
-			Status:      transfer.Status,
-			CreatedAt:   transfer.CreatedAt,
+			ID:            transfer.ID,
+			FromUserID:    transfer.FromUserID,
+			ToUserID:      transfer.ToUserID,
+			Amount:        transfer.Amount,
+			Description:   transfer.Description,
+			Status:        transfer.Status,
+			TransferredAt: transfer.TransferredAt,
+			CreatedAt:     transfer.CreatedAt,
 		}
 	}
 

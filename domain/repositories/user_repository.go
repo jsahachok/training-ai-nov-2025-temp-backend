@@ -21,6 +21,6 @@ type UserRepository interface {
 	Update(id uint, user *entities.User) error
 	Delete(id uint) error
 	GetByEmail(email string) (*entities.User, error)
-	UpdatePoints(userID uint, points int) error
-	UpdatePointsWithTransaction(tx interface{}, userID uint, points int) error
+	UpdatePoints(userID uint, points float64) error
+	UpdatePointsWithTransaction(tx interface{}, userID uint, points float64) error
 }

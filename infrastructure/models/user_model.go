@@ -8,21 +8,21 @@ import (
 )
 
 type UserModel struct {
-	ID          uint   `gorm:"primaryKey"`
-	FirstName   string `gorm:"not null"`
-	LastName    string `gorm:"not null"`
-	Email       string `gorm:"uniqueIndex;not null"`
-	Phone       string `gorm:"not null"`
-	DateOfBirth string `gorm:"not null"`
-	Address     string `gorm:"not null"`
-	City        string `gorm:"not null"`
-	Country     string `gorm:"not null"`
-	PostalCode  string `gorm:"not null"`
-	Avatar      string `gorm:"default:''"`
-	Points      int    `gorm:"default:0;not null"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	ID          uint   `gorm:"primaryKey;autoIncrement"`
+	FirstName   string `gorm:"column:first_name;type:varchar(100);not null"`
+	LastName    string `gorm:"column:last_name;type:varchar(100);not null"`
+	Email       string `gorm:"column:email;type:varchar(255);uniqueIndex;not null"`
+	Phone       string `gorm:"column:phone;type:varchar(20);not null"`
+	DateOfBirth string `gorm:"column:date_of_birth;type:date;not null"`
+	Address     string `gorm:"column:address;type:text;not null"`
+	City        string `gorm:"column:city;type:varchar(100);not null"`
+	Country     string `gorm:"column:country;type:varchar(100);not null"`
+	PostalCode  string `gorm:"column:postal_code;type:varchar(20);not null"`
+	Avatar      string `gorm:"column:avatar;type:varchar(500);default:''"`
+	Points      float64 `gorm:"column:points;type:decimal(10,2);default:0.00;not null"`
+	CreatedAt   time.Time `gorm:"column:created_at;not null"`
+	UpdatedAt   time.Time `gorm:"column:updated_at;not null"`
+	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index"`
 }
 
 func (UserModel) TableName() string {
