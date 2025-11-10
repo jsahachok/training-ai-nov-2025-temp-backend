@@ -1,0 +1,8 @@
+{
+    "servers": {
+      "kbtg-ai-workshop-nov Docs": {
+        "type": "sse",
+        "url": "https://gitmcp.io/mikelopster/kbtg-ai-workshop-nov"
+      }
+    }
+  }
