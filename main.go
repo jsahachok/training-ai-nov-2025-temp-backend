@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
-	"workshop4-backend/database"
-	"workshop4-backend/handlers"
+	"workshop4-backend/infrastructure"
+	infrastructureRepo "workshop4-backend/infrastructure/repositories"
+	"workshop4-backend/interface/controllers"
+	"workshop4-backend/usecases"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -11,8 +13,17 @@ import (
 )
 
 func main() {
-	// Initialize database connection
-	database.ConnectDB()
+	// Initialize database
+	database := infrastructure.NewDatabase()
+
+	// Initialize repository
+	userRepo := infrastructureRepo.NewUserRepository(database.GetDB())
+
+	// Initialize use case
+	userUseCase := usecases.NewUserUseCase(userRepo)
+
+	// Initialize controller
+	userController := controllers.NewUserController(userUseCase)
 
 	// Create new Fiber instance
 	app := fiber.New()
@@ -37,11 +48,11 @@ func main() {
 	})
 
 	// User routes
-	app.Get("/users", handlers.GetAllUsers)
-	app.Get("/users/:id", handlers.GetUserByID)
-	app.Post("/users", handlers.CreateUser)
-	app.Put("/users/:id", handlers.UpdateUser)
-	app.Delete("/users/:id", handlers.DeleteUser)
+	app.Get("/users", userController.GetAllUsers)
+	app.Get("/users/:id", userController.GetUserByID)
+	app.Post("/users", userController.CreateUser)
+	app.Put("/users/:id", userController.UpdateUser)
+	app.Delete("/users/:id", userController.DeleteUser)
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
